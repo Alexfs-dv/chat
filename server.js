@@ -1,11 +1,13 @@
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
+const cors = require("cors"); // Importar o pacote cors
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+app.use(cors()); // Configurar CORS
 app.use(express.static(__dirname)); // Serve arquivos estáticos
 
 io.on("connection", (socket) => {

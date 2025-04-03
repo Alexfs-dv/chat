@@ -24,5 +24,25 @@
       </div>
     </div>
     <script src="script.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      // Enviar mensagem
+      sendButton.addEventListener("click", () => {
+        const messageText = messageInput.value.trim();
+        if (messageText) {
+          socket.emit("sendMessage", messageText);
+          messageInput.value = "";
+        }
+      });
+
+      // Receber mensagem
+      socket.on("receiveMessage", (message) => {
+        messages.push(message);
+        renderMessages();
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+      });
+    </script>
   </body>
 </html>

@@ -4,42 +4,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const sendButton = document.getElementById("sendButton");
   const deleteAllButton = document.getElementById("deleteAllButton");
 
-  // Load messages from localStorage
-  let messages = JSON.parse(localStorage.getItem("messages") || "[]");
-  renderMessages();
+  // Array para armazenar mensagens
+  let messages = [];
 
-  // Send message function
-  function sendMessage() {
-    const messageText = messageInput.value.trim();
-    if (messageText) {
-      messages.push(messageText);
-      localStorage.setItem("messages", JSON.stringify(messages));
-      messageInput.value = "";
-      renderMessages();
-      // Scroll to bottom
-      messagesArea.scrollTop = messagesArea.scrollHeight;
-    }
-  }
-
-  // Render messages function
+  // Renderizar mensagens
   function renderMessages() {
     messagesArea.innerHTML = messages
       .map((msg) => `<div class="message">${msg}</div>`)
       .join("");
   }
 
-  // Event Listeners
-  sendButton.addEventListener("click", sendMessage);
-
-  messageInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      sendMessage();
+  // Enviar mensagem
+  sendButton.addEventListener("click", () => {
+    const messageText = messageInput.value.trim();
+    if (messageText) {
+      socket.emit("sendMessage", messageText);
+      messageInput.value = "";
     }
   });
 
+  // Receber mensagem
+  socket.on("receiveMessage", (message) => {
+    messages.push(message);
+    renderMessages();
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+  });
+
+  // Excluir todas as mensagens
   deleteAllButton.addEventListener("click", () => {
     messages = [];
-    localStorage.setItem("messages", JSON.stringify(messages));
     renderMessages();
   });
 });
